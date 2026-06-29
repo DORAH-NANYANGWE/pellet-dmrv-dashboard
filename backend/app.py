@@ -1,5 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
+from flask_migrate import Migrate
+from routes.devices import devices_bp
 
 from config import Config
 from database.db import db
@@ -21,9 +23,13 @@ CORS(app)
 
 db.init_app(app)
 
+# Initialize Flask-Migrate
+migrate = Migrate(app, db)
+
 # Register Blueprints
 app.register_blueprint(stoves_bp)
 app.register_blueprint(users_bp)
+app.register_blueprint(devices_bp)
 
 
 @app.route("/")
@@ -36,8 +42,6 @@ def home():
 
 if __name__ == "__main__":
     with app.app_context():
-        print("Tables found:", db.metadata.tables.keys())
-
         print("\n===== REGISTERED ROUTES =====")
         for rule in app.url_map.iter_rules():
             print(f"{rule.methods} -> {rule.rule}")

@@ -10,7 +10,8 @@ class Device(db.Model):
     device_code = db.Column(
         db.String(50),
         unique=True,
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     firmware_version = db.Column(
@@ -25,12 +26,14 @@ class Device(db.Model):
     mac_address = db.Column(
         db.String(50),
         unique=True,
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     status = db.Column(
         db.String(20),
-        default="Offline"
+        default="Offline",
+        index=True
     )
 
     last_seen = db.Column(db.DateTime)
