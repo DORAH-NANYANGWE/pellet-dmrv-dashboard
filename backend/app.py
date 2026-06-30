@@ -5,6 +5,8 @@ from routes.devices import devices_bp
 
 from config import Config
 from database.db import db
+from routes.telemetry import telemetry_bp
+from routes.dashboard import dashboard_bp
 
 # Import models
 from models.user import User
@@ -30,6 +32,8 @@ migrate = Migrate(app, db)
 app.register_blueprint(stoves_bp)
 app.register_blueprint(users_bp)
 app.register_blueprint(devices_bp)
+app.register_blueprint(telemetry_bp)
+app.register_blueprint(dashboard_bp)
 
 
 @app.route("/")
