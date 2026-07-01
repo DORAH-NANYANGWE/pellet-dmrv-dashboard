@@ -1,45 +1,113 @@
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { useEffect, useState } from "react";
+
+import {
+    MapContainer,
+    TileLayer,
+    Marker,
+    Popup
+} from "react-leaflet";
+
 import "leaflet/dist/leaflet.css";
 
+import { getMapData } from "../services/mapService";
+
 function StoveMap() {
-  return (
-    <div>
-      <h2>Stove Locations</h2>
 
-      <MapContainer
-        center={[-13.5, 27.8]}
-        zoom={5.5}
-        style={{
-          height: "350px",
-          width: "100%",
-          borderRadius: "10px"
-        }}
-      >
-        <TileLayer
-          attribution='&copy; OpenStreetMap contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+    const [markers, setMarkers] = useState([]);
 
-        <Marker position={[-15.4167, 28.2833]}>
-          <Popup>
-            STV001 - Lusaka
-          </Popup>
-        </Marker>
+    const [loading, setLoading] = useState(true);
 
-        <Marker position={[-12.9683, 28.6366]}>
-          <Popup>
-            STV002 - Ndola
-          </Popup>
-        </Marker>
+    useEffect(() => {
 
-        <Marker position={[-12.8167, 28.2000]}>
-          <Popup>
-            STV003 - Kitwe
-          </Popup>
-        </Marker>
-      </MapContainer>
-    </div>
-  );
+        async function loadMap() {
+
+            try {
+
+                const data = await getMapData();
+
+                setMarkers(data);
+
+            } catch (error) {
+
+                console.error(error);
+
+            } finally {
+
+                setLoading(false);
+
+            }
+
+        }
+
+        loadMap();
+
+    }, []);
+
+    if (loading) {
+
+        return (
+            <p style={{ color: "white" }}>
+                Loading map...
+            </p>
+        );
+
+    }
+
+    return (
+
+        <div>
+
+            <h2>Stove Locations</h2>
+
+            <MapContainer
+                center={[-13.5, 27.8]}
+                zoom={5.5}
+                style={{
+                    height: "350px",
+                    width: "100%",
+                    borderRadius: "10px"
+                }}
+            >
+
+                <TileLayer
+                    attribution="&copy; OpenStreetMap contributors"
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+
+                {markers.map((marker) => (
+
+                    <Marker
+                        key={marker.device}
+                        position={[
+                            marker.latitude,
+                            marker.longitude
+                        ]}
+                    >
+
+                        <Popup>
+
+                            <strong>{marker.stove}</strong>
+
+                            <br />
+
+                            Device: {marker.device}
+
+                            <br />
+
+                            Status: {marker.status}
+
+                        </Popup>
+
+                    </Marker>
+
+                ))}
+
+            </MapContainer>
+
+        </div>
+
+    );
+
 }
 
 export default StoveMap;

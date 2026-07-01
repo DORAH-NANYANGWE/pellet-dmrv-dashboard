@@ -1,71 +1,121 @@
+import { useEffect, useState } from "react";
+import { getFleet } from "../services/fleetService";
+
 function FleetTable() {
-  const stoves = [
-    {
-      id: "STV001",
-      status: "🟢 Online",
-      temp: "285°C",
-      battery: "4.1V",
-      lastSeen: "2 min ago"
-    },
-    {
-      id: "STV002",
-      status: "🟢 Online",
-      temp: "270°C",
-      battery: "4.0V",
-      lastSeen: "1 min ago"
-    },
-    {
-      id: "STV003",
-      status: "🔴 Offline",
-      temp: "--",
-      battery: "--",
-      lastSeen: "5 hrs ago"
-    },
-    {
-      id: "STV004",
-      status: "🟢 Online",
-      temp: "250°C",
-      battery: "3.9V",
-      lastSeen: "30 sec ago"
+
+    const [fleet, setFleet] = useState([]);
+
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+
+        async function loadFleet() {
+
+            try {
+
+                const data = await getFleet();
+
+                setFleet(data);
+
+            } catch (error) {
+
+                console.error(error);
+
+            } finally {
+
+                setLoading(false);
+
+            }
+
+        }
+
+        loadFleet();
+
+    }, []);
+
+    if (loading) {
+
+        return <p style={{ color: "white" }}>Loading fleet...</p>;
+
     }
-  ];
 
-  return (
-    <div>
-      <h2>Fleet Status</h2>
+    return (
 
-      <table
-        style={{
-          width: "100%",
-          color: "white",
-          borderCollapse: "collapse",
-          fontSize: "14px"
-        }}
-      >
-        <thead>
-          <tr style={{ borderBottom: "1px solid #334155" }}>
-            <th style={{ padding: "10px", textAlign: "left" }}>Stove</th>
-            <th style={{ padding: "10px", textAlign: "left" }}>Status</th>
-            <th style={{ padding: "10px", textAlign: "left" }}>Temp</th>
-            <th style={{ padding: "10px", textAlign: "left" }}>Battery</th>
-            <th style={{ padding: "10px", textAlign: "left" }}>Last Seen</th>
-          </tr>
-        </thead>
+        <div>
 
-        <tbody>
-          {stoves.map((stove) => (
-            <tr key={stove.id}>
-              <td style={{ padding: "8px" }}>{stove.id}</td>
-              <td style={{ padding: "8px" }}>{stove.status}</td>
-              <td style={{ padding: "8px" }}>{stove.temp}</td>
-              <td style={{ padding: "8px" }}>{stove.battery}</td>
-              <td style={{ padding: "8px" }}>{stove.lastSeen}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+            <h2>Fleet Status</h2>
+
+            <table
+                style={{
+                    width: "100%",
+                    color: "white",
+                    borderCollapse: "collapse",
+                    fontSize: "14px"
+                }}
+            >
+
+                <thead>
+
+                    <tr style={{ borderBottom: "1px solid #334155" }}>
+
+                        <th style={{ padding: "10px", textAlign: "left" }}>Stove</th>
+
+                        <th style={{ padding: "10px", textAlign: "left" }}>Device</th>
+
+                        <th style={{ padding: "10px", textAlign: "left" }}>Status</th>
+
+                        <th style={{ padding: "10px", textAlign: "left" }}>Temp</th>
+
+                        <th style={{ padding: "10px", textAlign: "left" }}>Battery</th>
+
+                        <th style={{ padding: "10px", textAlign: "left" }}>Last Seen</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {fleet.map((device) => (
+
+                        <tr key={device.device_code}>
+
+                            <td style={{ padding: "8px" }}>
+                                {device.stove_id}
+                            </td>
+
+                            <td style={{ padding: "8px" }}>
+                                {device.device_code}
+                            </td>
+
+                            <td style={{ padding: "8px" }}>
+                                {device.status === "Online" ? "🟢 Online" : "🔴 Offline"}
+                            </td>
+
+                            <td style={{ padding: "8px" }}>
+                                {device.temperature ?? "--"} °C
+                            </td>
+
+                            <td style={{ padding: "8px" }}>
+                                {device.battery_voltage ?? "--"} V
+                            </td>
+
+                            <td style={{ padding: "8px" }}>
+                                {device.last_seen ?? "--"}
+                            </td>
+
+                        </tr>
+
+                    ))}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    );
+
 }
 
 export default FleetTable;

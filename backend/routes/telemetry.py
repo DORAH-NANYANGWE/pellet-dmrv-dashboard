@@ -39,9 +39,12 @@ def get_telemetry():
 @telemetry_bp.route("/api/telemetry/<int:device_id>", methods=["GET"])
 def get_device_telemetry(device_id):
 
-    telemetry = Telemetry.query.filter_by(
-        device_id=device_id
-    ).order_by(Telemetry.timestamp.desc()).all()
+    telemetry = (
+        Telemetry.query
+        .filter_by(device_id=device_id)
+        .order_by(Telemetry.timestamp.desc())
+        .all()
+    )
 
     return jsonify([
         {
@@ -61,6 +64,31 @@ def get_device_telemetry(device_id):
 
 
 # ======================================
+# GET TEMPERATURE CHART DATA
+# ======================================
+@telemetry_bp.route("/api/telemetry/chart", methods=["GET"])
+def telemetry_chart():
+
+    records = (
+        Telemetry.query
+        .order_by(Telemetry.timestamp.asc())
+        .limit(20)
+        .all()
+    )
+
+    chart_data = []
+
+    for record in records:
+
+        chart_data.append({
+            "time": record.timestamp.strftime("%H:%M"),
+            "temperature": record.temperature
+        })
+
+    return jsonify(chart_data)
+
+
+# ======================================
 # CREATE TELEMETRY
 # ======================================
 @telemetry_bp.route("/api/telemetry", methods=["POST"])
@@ -75,7 +103,9 @@ def create_telemetry():
     ]
 
     for field in required_fields:
+
         if field not in data or data[field] is None:
+
             return jsonify({
                 "success": False,
                 "message": f"{field} is required."
@@ -84,6 +114,7 @@ def create_telemetry():
     device = Device.query.get(data["device_id"])
 
     if not device:
+
         return jsonify({
             "success": False,
             "message": "Device not found."

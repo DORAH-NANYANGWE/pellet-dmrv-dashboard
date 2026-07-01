@@ -7,6 +7,8 @@ from config import Config
 from database.db import db
 from routes.telemetry import telemetry_bp
 from routes.dashboard import dashboard_bp
+from routes.fleet import fleet_bp
+from routes.map import map_bp
 
 # Import models
 from models.user import User
@@ -34,6 +36,8 @@ app.register_blueprint(users_bp)
 app.register_blueprint(devices_bp)
 app.register_blueprint(telemetry_bp)
 app.register_blueprint(dashboard_bp)
+app.register_blueprint(fleet_bp)
+app.register_blueprint(map_bp)
 
 
 @app.route("/")
