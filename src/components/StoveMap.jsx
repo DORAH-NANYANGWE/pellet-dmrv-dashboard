@@ -70,7 +70,7 @@ function StoveMap() {
                 center={[-13.5, 27.8]}
                 zoom={5.5}
                 style={{
-                    height: "350px",
+                    height: "500px",
                     width: "100%",
                     borderRadius: "10px"
                 }}

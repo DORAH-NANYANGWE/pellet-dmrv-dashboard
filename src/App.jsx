@@ -4,20 +4,25 @@ import Dashboard from "./Pages/Dashboard";
 
 function App() {
   return (
-    <div style={{ display: "flex" }}>
+    <div
+      style={{
+        display: "flex",
+        minHeight: "100vh",
+        backgroundColor: "#111827"
+      }}
+    >
       <Sidebar />
 
-      <div
+      <main
         style={{
-          marginLeft: "240px",
-          width: "100%",
-          minHeight: "100vh",
+          flex: 1,
+          minWidth: 0,
           backgroundColor: "#111827"
         }}
       >
         <Topbar />
         <Dashboard />
-      </div>
+      </main>
     </div>
   );
 }

@@ -30,11 +30,7 @@ function FleetTable() {
 
         loadFleet();
 
-        const interval = setInterval(() => {
-
-            loadFleet();
-
-        }, 30000);
+        const interval = setInterval(loadFleet, 30000);
 
         return () => clearInterval(interval);
 
@@ -42,7 +38,11 @@ function FleetTable() {
 
     if (loading) {
 
-        return <p style={{ color: "white" }}>Loading fleet...</p>;
+        return (
+            <p style={{ color: "white" }}>
+                Loading fleet...
+            </p>
+        );
 
     }
 
@@ -50,7 +50,14 @@ function FleetTable() {
 
         <div>
 
-            <h2>Fleet Status</h2>
+            <h2
+                style={{
+                    marginBottom: "20px",
+                    color: "#ffffff"
+                }}
+            >
+                Fleet Status
+            </h2>
 
             <table
                 style={{
@@ -63,14 +70,24 @@ function FleetTable() {
 
                 <thead>
 
-                    <tr style={{ borderBottom: "1px solid #334155" }}>
+                    <tr
+                        style={{
+                            background: "#0f172a",
+                            borderBottom: "2px solid #334155"
+                        }}
+                    >
 
-                        <th style={{ padding: "10px", textAlign: "left" }}>Stove</th>
-                        <th style={{ padding: "10px", textAlign: "left" }}>Device</th>
-                        <th style={{ padding: "10px", textAlign: "left" }}>Status</th>
-                        <th style={{ padding: "10px", textAlign: "left" }}>Temp</th>
-                        <th style={{ padding: "10px", textAlign: "left" }}>Battery</th>
-                        <th style={{ padding: "10px", textAlign: "left" }}>Last Seen</th>
+                        <th style={{ padding: "14px", textAlign: "left" }}>Stove</th>
+
+                        <th style={{ padding: "14px", textAlign: "left" }}>Device</th>
+
+                        <th style={{ padding: "14px", textAlign: "center" }}>Status</th>
+
+                        <th style={{ padding: "14px", textAlign: "center" }}>Temperature</th>
+
+                        <th style={{ padding: "14px", textAlign: "center" }}>Battery</th>
+
+                        <th style={{ padding: "14px", textAlign: "center" }}>Last Seen</th>
 
                     </tr>
 
@@ -78,34 +95,98 @@ function FleetTable() {
 
                 <tbody>
 
-                    {fleet.map((device) => (
+                    {fleet.map((device, index) => (
 
-                        <tr key={device.device_code}>
+                        <tr
 
-                            <td style={{ padding: "8px" }}>
-                                {device.stove_id}
+                            key={device.device_code}
+
+                            style={{
+                                background:
+                                    index % 2 === 0
+                                        ? "#1e293b"
+                                        : "#273549",
+
+                                transition: "0.3s"
+                            }}
+
+                        >
+
+                            <td style={{ padding: "14px" }}>
+
+                                <strong>{device.stove_id}</strong>
+
                             </td>
 
-                            <td style={{ padding: "8px" }}>
+                            <td style={{ padding: "14px" }}>
+
                                 {device.device_code}
+
                             </td>
 
-                            <td style={{ padding: "8px" }}>
-                                {device.status === "Online"
-                                    ? "🟢 Online"
-                                    : "🔴 Offline"}
+                            <td
+                                style={{
+                                    textAlign: "center"
+                                }}
+                            >
+
+                                <span
+                                    style={{
+                                        background:
+                                            device.status === "Online"
+                                                ? "#16a34a"
+                                                : "#dc2626",
+
+                                        color: "white",
+
+                                        padding: "6px 12px",
+
+                                        borderRadius: "30px",
+
+                                        fontSize: "12px",
+
+                                        fontWeight: "bold"
+                                    }}
+                                >
+
+                                    {device.status === "Online"
+                                        ? "🟢 ONLINE"
+                                        : "🔴 OFFLINE"}
+
+                                </span>
+
                             </td>
 
-                            <td style={{ padding: "8px" }}>
+                            <td
+                                style={{
+                                    textAlign: "center"
+                                }}
+                            >
+
                                 {device.temperature ?? "--"} °C
+
                             </td>
 
-                            <td style={{ padding: "8px" }}>
+                            <td
+                                style={{
+                                    textAlign: "center"
+                                }}
+                            >
+
                                 {device.battery_voltage ?? "--"} V
+
                             </td>
 
-                            <td style={{ padding: "8px" }}>
+                            <td
+                                style={{
+                                    textAlign: "center",
+                                    fontSize: "12px",
+                                    color: "#cbd5e1"
+                                }}
+                            >
+
                                 {device.last_seen ?? "--"}
+
                             </td>
 
                         </tr>
