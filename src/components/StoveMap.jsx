@@ -14,32 +14,39 @@ import { getMapData } from "../services/mapService";
 function StoveMap() {
 
     const [markers, setMarkers] = useState([]);
-
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    async function loadMap() {
 
-        async function loadMap() {
+        try {
 
-            try {
+            const data = await getMapData();
 
-                const data = await getMapData();
+            setMarkers(data);
 
-                setMarkers(data);
+        } catch (error) {
 
-            } catch (error) {
+            console.error(error);
 
-                console.error(error);
+        } finally {
 
-            } finally {
-
-                setLoading(false);
-
-            }
+            setLoading(false);
 
         }
 
+    }
+
+    useEffect(() => {
+
         loadMap();
+
+        const interval = setInterval(() => {
+
+            loadMap();
+
+        }, 30000);
+
+        return () => clearInterval(interval);
 
     }, []);
 

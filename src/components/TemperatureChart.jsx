@@ -10,9 +10,7 @@ import {
 } from "chart.js";
 
 import { Line } from "react-chartjs-2";
-
 import { useEffect, useState } from "react";
-
 import { getTemperatureChart } from "../services/telemetryService";
 
 ChartJS.register(
@@ -28,32 +26,39 @@ ChartJS.register(
 function TemperatureChart() {
 
     const [chartData, setChartData] = useState([]);
-
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    async function loadChart() {
 
-        async function loadChart() {
+        try {
 
-            try {
+            const data = await getTemperatureChart();
 
-                const data = await getTemperatureChart();
+            setChartData(data);
 
-                setChartData(data);
+        } catch (error) {
 
-            } catch (error) {
+            console.error(error);
 
-                console.error(error);
+        } finally {
 
-            } finally {
-
-                setLoading(false);
-
-            }
+            setLoading(false);
 
         }
 
+    }
+
+    useEffect(() => {
+
         loadChart();
+
+        const interval = setInterval(() => {
+
+            loadChart();
+
+        }, 30000);
+
+        return () => clearInterval(interval);
 
     }, []);
 

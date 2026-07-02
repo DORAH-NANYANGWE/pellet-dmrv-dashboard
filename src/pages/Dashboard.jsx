@@ -9,39 +9,54 @@ import { getDashboardSummary } from "../services/dashboardService";
 function Dashboard() {
 
     const [dashboard, setDashboard] = useState(null);
-
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    async function loadDashboard() {
 
-        async function loadDashboard() {
+        try {
 
-            try {
+            const data = await getDashboardSummary();
 
-                const data = await getDashboardSummary();
+            setDashboard(data);
 
-                setDashboard(data);
+        } catch (error) {
 
-            } catch (error) {
+            console.error(error);
 
-                console.error(error);
+        } finally {
 
-            } finally {
-
-                setLoading(false);
-
-            }
+            setLoading(false);
 
         }
 
+    }
+
+    useEffect(() => {
+
+        // Load immediately
         loadDashboard();
+
+        // Refresh every 30 seconds
+        const interval = setInterval(() => {
+
+            loadDashboard();
+
+        }, 30000);
+
+        // Cleanup
+        return () => clearInterval(interval);
 
     }, []);
 
     if (loading) {
 
         return (
-            <div style={{ color: "white", padding: "30px" }}>
+            <div
+                style={{
+                    color: "white",
+                    padding: "30px"
+                }}
+            >
                 Loading Dashboard...
             </div>
         );

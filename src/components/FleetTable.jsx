@@ -4,32 +4,39 @@ import { getFleet } from "../services/fleetService";
 function FleetTable() {
 
     const [fleet, setFleet] = useState([]);
-
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    async function loadFleet() {
 
-        async function loadFleet() {
+        try {
 
-            try {
+            const data = await getFleet();
 
-                const data = await getFleet();
+            setFleet(data);
 
-                setFleet(data);
+        } catch (error) {
 
-            } catch (error) {
+            console.error(error);
 
-                console.error(error);
+        } finally {
 
-            } finally {
-
-                setLoading(false);
-
-            }
+            setLoading(false);
 
         }
 
+    }
+
+    useEffect(() => {
+
         loadFleet();
+
+        const interval = setInterval(() => {
+
+            loadFleet();
+
+        }, 30000);
+
+        return () => clearInterval(interval);
 
     }, []);
 
@@ -59,15 +66,10 @@ function FleetTable() {
                     <tr style={{ borderBottom: "1px solid #334155" }}>
 
                         <th style={{ padding: "10px", textAlign: "left" }}>Stove</th>
-
                         <th style={{ padding: "10px", textAlign: "left" }}>Device</th>
-
                         <th style={{ padding: "10px", textAlign: "left" }}>Status</th>
-
                         <th style={{ padding: "10px", textAlign: "left" }}>Temp</th>
-
                         <th style={{ padding: "10px", textAlign: "left" }}>Battery</th>
-
                         <th style={{ padding: "10px", textAlign: "left" }}>Last Seen</th>
 
                     </tr>
@@ -89,7 +91,9 @@ function FleetTable() {
                             </td>
 
                             <td style={{ padding: "8px" }}>
-                                {device.status === "Online" ? "🟢 Online" : "🔴 Offline"}
+                                {device.status === "Online"
+                                    ? "🟢 Online"
+                                    : "🔴 Offline"}
                             </td>
 
                             <td style={{ padding: "8px" }}>

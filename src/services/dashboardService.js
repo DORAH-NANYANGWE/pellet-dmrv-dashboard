@@ -1,6 +1,9 @@
-const API_URL = "http://127.0.0.1:5000/api/dashboard";
+import API_BASE_URL from "./api";
+
+const API_URL = `${API_BASE_URL}/api/dashboard`;
 
 export async function getDashboardSummary() {
+
     const response = await fetch(API_URL);
 
     if (!response.ok) {
@@ -8,4 +11,5 @@ export async function getDashboardSummary() {
     }
 
     return await response.json();
+
 }

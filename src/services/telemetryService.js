@@ -1,4 +1,6 @@
-const API_URL = "http://127.0.0.1:5000/api/telemetry/chart";
+import API_BASE_URL from "./api";
+
+const API_URL = `${API_BASE_URL}/api/telemetry/chart`;
 
 export async function getTemperatureChart() {
 
