@@ -18,3 +18,18 @@ class Config:
     )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # Flask Secret Key
+    SECRET_KEY = os.getenv(
+        "SECRET_KEY",
+        "pellet-dmrv-secret-key"
+    )
+
+    # JWT Configuration
+    JWT_SECRET_KEY = os.getenv(
+        "JWT_SECRET_KEY",
+        "pellet-dmrv-jwt-secret-key"
+    )
+
+    # Token expires after 1 hour
+    JWT_ACCESS_TOKEN_EXPIRES = 3600
