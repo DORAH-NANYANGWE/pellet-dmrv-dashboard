@@ -8,11 +8,13 @@ import {
 import Login from "./Pages/Login";
 import Dashboard from "./Pages/Dashboard";
 import UserManagement from "./Pages/UserManagement";
-
+import Fleet from "./Pages/Fleet";
 import Sidebar from "./Components/Sidebar";
 import Topbar from "./Components/Topbar";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import RoleProtectedRoute from "./Components/RoleProtectedRoute";
+
+
 
 function DashboardLayout() {
 
@@ -76,7 +78,10 @@ function App() {
                     path="/dashboard"
                     element={<Dashboard />}
                 />
-
+                <Route
+                    path="/fleet"
+                    element={<Fleet />}
+/>
                 <Route
                     path="/users"
                     element={

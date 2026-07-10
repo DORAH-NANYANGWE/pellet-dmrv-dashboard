@@ -4,12 +4,26 @@ const API_URL = `${API_BASE_URL}/api/fleet`;
 
 export async function getFleet() {
 
-    const response = await fetch(API_URL);
+    const token = localStorage.getItem("access_token");
+
+    const response = await fetch(API_URL, {
+
+        headers: {
+
+            Authorization: `Bearer ${token}`
+
+        }
+
+    });
+
+    const data = await response.json();
 
     if (!response.ok) {
-        throw new Error("Failed to load fleet.");
+
+        throw new Error(data.message || "Failed to load fleet.");
+
     }
 
-    return await response.json();
+    return data;
 
 }

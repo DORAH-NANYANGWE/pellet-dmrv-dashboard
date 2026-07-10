@@ -85,3 +85,36 @@ export async function updateUser(id, userData) {
     return data;
 
 }
+export async function deleteUser(id) {
+
+    const token = localStorage.getItem("access_token");
+
+    const response = await fetch(
+
+        `${API_BASE_URL}/api/users/${id}`,
+
+        {
+
+            method: "DELETE",
+
+            headers: {
+
+                Authorization: `Bearer ${token}`
+
+            }
+
+        }
+
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+
+        throw new Error(data.message);
+
+    }
+
+    return data;
+
+}

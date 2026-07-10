@@ -2,47 +2,49 @@ import { useEffect, useState } from "react";
 
 import {
     getUsers,
-    createUser
+    createUser,
+    updateUser,
+    deleteUser
 } from "../services/userService";
 
 import {
     Box,
     Typography,
-    Paper,
-    Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody,
-    CircularProgress,
-    Alert,
     Button,
     Stack,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-    MenuItem
+    CircularProgress,
+    Alert
 } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
 
+import UserDialog from "../Components/UserDialog";
+import UserTable from "../Components/UserTable";
+
 function UserManagement() {
 
     const [users, setUsers] = useState([]);
+
     const [loading, setLoading] = useState(true);
+
     const [error, setError] = useState("");
 
     const [openDialog, setOpenDialog] = useState(false);
 
+    const [editingUser, setEditingUser] = useState(null);
+
     const [fullName, setFullName] = useState("");
+
     const [email, setEmail] = useState("");
+
     const [password, setPassword] = useState("");
+
     const [role, setRole] = useState("Engineer");
 
     useEffect(() => {
+
         loadUsers();
+
     }, []);
 
     async function loadUsers() {
@@ -55,11 +57,15 @@ function UserManagement() {
 
             setUsers(data);
 
-        } catch (err) {
+        }
+
+        catch (err) {
 
             setError(err.message);
 
-        } finally {
+        }
+
+        finally {
 
             setLoading(false);
 
@@ -67,70 +73,162 @@ function UserManagement() {
 
     }
 
+    function resetForm() {
+
+        setEditingUser(null);
+
+        setFullName("");
+
+        setEmail("");
+
+        setPassword("");
+
+        setRole("Engineer");
+
+    }
+
     async function handleCreateUser() {
 
-    console.log("========== CREATE USER ==========");
+        try {
 
-    console.log("Button clicked");
+            await createUser({
 
-    console.log({
-        full_name: fullName,
-        email: email,
-        password: password,
-        role: role
-    });
+                full_name: fullName,
+
+                email,
+
+                password,
+
+                role
+
+            });
+
+            alert("User created successfully!");
+
+            setOpenDialog(false);
+
+            resetForm();
+
+            await loadUsers();
+
+        }
+
+        catch (err) {
+
+            alert(err.message);
+
+        }
+
+    }
+
+    function handleEdit(user) {
+
+        setEditingUser(user);
+
+        setFullName(user.full_name);
+
+        setEmail(user.email);
+
+        setRole(user.role);
+
+        setPassword("");
+
+        setOpenDialog(true);
+
+    }
+
+    async function handleUpdateUser() {
+
+        try {
+
+            await updateUser(
+
+                editingUser.id,
+
+                {
+
+                    full_name: fullName,
+
+                    email,
+
+                    role
+
+                }
+
+            );
+
+            alert("User updated successfully!");
+
+            setOpenDialog(false);
+
+            resetForm();
+
+            await loadUsers();
+
+        }
+
+        catch (err) {
+
+            alert(err.message);
+
+        }
+
+    }
+
+    async function handleDelete(user) {
+
+    const confirmed = window.confirm(
+
+        `Are you sure you want to delete "${user.full_name}"?`
+
+    );
+
+    if (!confirmed) {
+
+        return;
+
+    }
 
     try {
 
-        console.log("Calling createUser()...");
+        await deleteUser(user.id);
 
-        const response = await createUser({
-            full_name: fullName,
-            email: email,
-            password: password,
-            role: role
-        });
-
-        console.log("Backend Response:", response);
-
-        alert("User created successfully!");
-
-        setOpenDialog(false);
-
-        setFullName("");
-        setEmail("");
-        setPassword("");
-        setRole("Engineer");
+        alert("User deleted successfully!");
 
         await loadUsers();
 
-    } catch (err) {
+    }
 
-        console.error(err);
+    catch (err) {
 
         alert(err.message);
 
     }
 
-    }
+}
 
     if (loading) {
 
         return (
 
             <Box
+
                 display="flex"
+
                 justifyContent="center"
+
                 mt={10}
+
             >
+
                 <CircularProgress />
+
             </Box>
 
         );
 
     }
-
-    return (
+        return (
 
         <Box p={4}>
 
@@ -151,7 +249,13 @@ function UserManagement() {
                 <Button
                     variant="contained"
                     startIcon={<AddIcon />}
-                    onClick={() => setOpenDialog(true)}
+                    onClick={() => {
+
+                        resetForm();
+
+                        setOpenDialog(true);
+
+                    }}
                 >
                     Add User
                 </Button>
@@ -169,144 +273,58 @@ function UserManagement() {
 
             )}
 
-            <Paper>
+            <UserTable
 
-                <Table>
+                users={users}
 
-                    <TableHead>
+                onEdit={handleEdit}
 
-                        <TableRow>
+                onDelete={handleDelete}
 
-                            <TableCell>ID</TableCell>
-                            <TableCell>Full Name</TableCell>
-                            <TableCell>Email</TableCell>
-                            <TableCell>Role</TableCell>
+            />
 
-                        </TableRow>
+            <UserDialog
 
-                    </TableHead>
-
-                    <TableBody>
-
-                        {users.map((user) => (
-
-                            <TableRow key={user.id}>
-
-                                <TableCell>{user.id}</TableCell>
-
-                                <TableCell>{user.full_name}</TableCell>
-
-                                <TableCell>{user.email}</TableCell>
-
-                                <TableCell>{user.role}</TableCell>
-
-                            </TableRow>
-
-                        ))}
-
-                    </TableBody>
-
-                </Table>
-
-            </Paper>
-
-            <Dialog
                 open={openDialog}
-                onClose={() => setOpenDialog(false)}
-                fullWidth
-                maxWidth="sm"
-            >
 
-                <DialogTitle>
+                onClose={() => {
 
-                    Add New User
+                    setOpenDialog(false);
 
-                </DialogTitle>
+                    resetForm();
 
-                <DialogContent>
+                }}
 
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        label="Full Name"
-                        value={fullName}
-                        onChange={(e) =>
-                            setFullName(e.target.value)
-                        }
-                    />
+                onSave={
 
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        label="Email"
-                        type="email"
-                        value={email}
-                        onChange={(e) =>
-                            setEmail(e.target.value)
-                        }
-                    />
+                    editingUser
 
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        label="Password"
-                        type="password"
-                        value={password}
-                        onChange={(e) =>
-                            setPassword(e.target.value)
-                        }
-                    />
+                        ? handleUpdateUser
 
-                    <TextField
-                        select
-                        fullWidth
-                        margin="normal"
-                        label="Role"
-                        value={role}
-                        onChange={(e) =>
-                            setRole(e.target.value)
-                        }
-                    >
+                        : handleCreateUser
 
-                        <MenuItem value="Administrator">
-                            Administrator
-                        </MenuItem>
+                }
 
-                        <MenuItem value="Management">
-                            Management
-                        </MenuItem>
+                fullName={fullName}
+                setFullName={setFullName}
 
-                        <MenuItem value="Engineer">
-                            Engineer
-                        </MenuItem>
+                email={email}
+                setEmail={setEmail}
 
-                    </TextField>
+                password={password}
+                setPassword={setPassword}
 
-                </DialogContent>
+                role={role}
+                setRole={setRole}
 
-                <DialogActions>
+                editingUser={editingUser}
 
-                    <Button
-                        onClick={() => setOpenDialog(false)}
-                    >
-                        Cancel
-                    </Button>
-
-                    <Button
-                        variant="contained"
-                        onClick={handleCreateUser}
-                    >
-                        Save User
-                    </Button>
-
-                </DialogActions>
-
-            </Dialog>
+            />
 
         </Box>
 
     );
 
-
 }
+
 export default UserManagement;
