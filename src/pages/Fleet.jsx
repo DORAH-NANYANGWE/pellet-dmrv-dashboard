@@ -1,14 +1,20 @@
+import FleetTable from "../Components/FleetTable";
+// If your folder is named "components" (lowercase), use:
+// import FleetTable from "../components/FleetTable";
+
 function Fleet() {
 
     return (
 
         <div
             style={{
-                color: "white",
-                padding: "30px"
+                padding: "30px",
+                color: "white"
             }}
         >
-            Fleet Page
+
+            <FleetTable />
+
         </div>
 
     );

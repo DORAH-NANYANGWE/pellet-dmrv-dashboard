@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-
-import FleetTable from "../components/FleetTable";
-import StoveMap from "../components/StoveMap";
+import ActiveAlerts from "../components/ActiveAlerts";
 import TemperatureChart from "../components/TemperatureChart";
+import AlertSummary from "../components/AlertSummary";
 
 import {
     FaUsers,
@@ -173,40 +172,22 @@ function Dashboard() {
             >
 
                 <h2>Temperature Trends</h2>
+<TemperatureChart />
 
-                <TemperatureChart />
+<div style={{ marginTop: "30px" }}>
+    <ActiveAlerts />
+</div>
 
-            </div>
-
-            {/* Fleet Table */}
-
-            <div
-                style={{
-                    marginTop: "30px",
-                    background: "#1e293b",
-                    borderRadius: "12px",
-                    padding: "20px"
-                }}
-            >
-
-                <FleetTable />
+<div style={{ marginTop: "30px" }}>
+    <AlertSummary />
+</div>
 
             </div>
 
-            {/* Map */}
+            
 
-            <div
-                style={{
-                    marginTop: "30px",
-                    background: "#1e293b",
-                    borderRadius: "12px",
-                    padding: "20px"
-                }}
-            >
+            
 
-                <StoveMap />
-
-            </div>
 
         </div>
 

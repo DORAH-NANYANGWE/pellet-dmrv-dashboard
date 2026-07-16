@@ -3,6 +3,8 @@ from flask import Blueprint, request, jsonify
 from database.db import db
 from models.telemetry import Telemetry
 from models.device import Device
+from services.event_generator import generate_events
+from services.cooking_session_service import update_cooking_session
 
 telemetry_bp = Blueprint("telemetry", __name__)
 
@@ -134,12 +136,22 @@ def create_telemetry():
             sd_card_ok=data.get("sd_card_ok", True)
         )
 
+        # Save telemetry
         db.session.add(telemetry)
+
+        # Flush so telemetry gets an ID before generating events
+        db.session.flush()
+
+        # Generate events
+        generate_events(device, telemetry)
+        #update cooking session
+        update_cooking_session(device, telemetry)
 
         # Update device heartbeat
         device.last_seen = db.func.now()
         device.status = "Online"
 
+        # Commit everything
         db.session.commit()
 
         return jsonify({

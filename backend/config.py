@@ -6,6 +6,9 @@ load_dotenv()
 
 class Config:
 
+    # ======================================
+    # Database Configuration
+    # ======================================
     DB_HOST = os.getenv("DB_HOST")
     DB_PORT = os.getenv("DB_PORT")
     DB_NAME = os.getenv("DB_NAME")
@@ -19,13 +22,17 @@ class Config:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # ======================================
     # Flask Secret Key
+    # ======================================
     SECRET_KEY = os.getenv(
         "SECRET_KEY",
         "pellet-dmrv-secret-key"
     )
 
+    # ======================================
     # JWT Configuration
+    # ======================================
     JWT_SECRET_KEY = os.getenv(
         "JWT_SECRET_KEY",
         "pellet-dmrv-jwt-secret-key"
@@ -33,3 +40,11 @@ class Config:
 
     # Token expires after 1 hour
     JWT_ACCESS_TOKEN_EXPIRES = 3600
+
+    # ======================================
+    # Device Heartbeat Configuration
+    # ======================================
+
+    # Number of minutes without telemetry
+    # before a device is considered offline.
+    HEARTBEAT_TIMEOUT_MINUTES = 15

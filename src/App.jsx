@@ -13,6 +13,7 @@ import Sidebar from "./Components/Sidebar";
 import Topbar from "./Components/Topbar";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import RoleProtectedRoute from "./Components/RoleProtectedRoute";
+import StoveDetail from "./Pages/StoveDetail";
 
 
 
@@ -75,23 +76,32 @@ function App() {
             >
 
                 <Route
-                    path="/dashboard"
-                    element={<Dashboard />}
-                />
-                <Route
-                    path="/fleet"
-                    element={<Fleet />}
+    path="/dashboard"
+    element={<Dashboard />}
 />
-                <Route
-                    path="/users"
-                    element={
-                        <RoleProtectedRoute
-                            allowedRoles={["Administrator"]}
-                        >
-                            <UserManagement />
-                        </RoleProtectedRoute>
-                    }
-                />
+
+<Route
+    path="/fleet"
+    element={<Fleet />}
+/>
+
+<Route
+    path="/fleet/:deviceCode"
+    element={<StoveDetail />}
+/>
+
+<Route
+    path="/users"
+    element={
+        <RoleProtectedRoute
+            allowedRoles={["Administrator"]}
+        >
+            <UserManagement />
+        </RoleProtectedRoute>
+    }
+/>
+                    
+                
 
             </Route>
 

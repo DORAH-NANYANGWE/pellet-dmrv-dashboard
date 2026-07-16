@@ -13,7 +13,6 @@ import {
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
-import MapIcon from "@mui/icons-material/Map";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import VerifiedIcon from "@mui/icons-material/Verified";
 
@@ -92,24 +91,6 @@ function Sidebar() {
 
                 </ListItem>
 
-                {/* Map */}
-
-                <ListItem disablePadding>
-
-                    <ListItemButton
-                        component={Link}
-                        to="/map"
-                    >
-
-                        <ListItemIcon sx={{ color: "#ffffff" }}>
-                            <MapIcon />
-                        </ListItemIcon>
-
-                        <ListItemText primary="Map" />
-
-                    </ListItemButton>
-
-                </ListItem>
 
                 {/* Reports */}
 
