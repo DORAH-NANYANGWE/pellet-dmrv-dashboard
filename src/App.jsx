@@ -14,7 +14,7 @@ import Topbar from "./Components/Topbar";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import RoleProtectedRoute from "./Components/RoleProtectedRoute";
 import StoveDetail from "./Pages/StoveDetail";
-
+import CookingSessions from "./Pages/CookingSessions";
 
 
 function DashboardLayout() {
@@ -83,6 +83,10 @@ function App() {
 <Route
     path="/fleet"
     element={<Fleet />}
+/>
+<Route
+    path="/cooking-sessions"
+    element={<CookingSessions />}
 />
 
 <Route

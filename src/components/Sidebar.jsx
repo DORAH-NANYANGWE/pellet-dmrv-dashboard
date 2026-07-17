@@ -15,6 +15,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import VerifiedIcon from "@mui/icons-material/Verified";
+import OutdoorGrillIcon from "@mui/icons-material/OutdoorGrill";
 
 const drawerWidth = 240;
 
@@ -91,6 +92,24 @@ function Sidebar() {
 
                 </ListItem>
 
+                {/* Cooking Sessions */}
+
+                <ListItem disablePadding>
+
+                    <ListItemButton
+                        component={Link}
+                        to="/cooking-sessions"
+                    >
+
+                        <ListItemIcon sx={{ color: "#ffffff" }}>
+                            <OutdoorGrillIcon />
+                        </ListItemIcon>
+
+                        <ListItemText primary="Cooking Sessions" />
+
+                    </ListItemButton>
+
+                </ListItem>
 
                 {/* Reports */}
 
