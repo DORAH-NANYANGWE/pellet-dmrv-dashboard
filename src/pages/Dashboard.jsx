@@ -1,33 +1,35 @@
 import { useEffect, useState } from "react";
-import ActiveAlerts from "../components/ActiveAlerts";
-import TemperatureChart from "../components/TemperatureChart";
-import AlertSummary from "../components/AlertSummary";
 
-import {
-    FaUsers,
-    FaFire,
-    FaBroadcastTower,
-    FaChartLine
-} from "react-icons/fa";
+import FleetStats from "../Components/FleetStats";
+import FleetMap from "../Components/FleetMap";
+import TemperatureChart from "../Components/TemperatureChart";
+import ActiveAlerts from "../Components/ActiveAlerts";
+import AlertSummary from "../Components/AlertSummary";
 
 import { getDashboardSummary } from "../services/dashboardService";
+import { getFleet } from "../services/fleetService";
 
 function Dashboard() {
 
     const [dashboard, setDashboard] = useState(null);
+    const [stoves, setStoves] = useState([]);
     const [loading, setLoading] = useState(true);
 
     async function loadDashboard() {
 
         try {
 
-            const data = await getDashboardSummary();
+            const [summary, fleet] = await Promise.all([
+                getDashboardSummary(),
+                getFleet()
+            ]);
 
-            setDashboard(data);
+            setDashboard(summary);
+            setStoves(fleet);
 
         } catch (error) {
 
-            console.error(error);
+            console.error("Dashboard Error:", error);
 
         } finally {
 
@@ -50,144 +52,133 @@ function Dashboard() {
     if (loading) {
 
         return (
-            <div style={{ color: "white", padding: "30px" }}>
+
+            <div
+                style={{
+                    color: "white",
+                    padding: "30px",
+                    fontSize: "18px"
+                }}
+            >
                 Loading Dashboard...
             </div>
+
         );
 
     }
 
-    const cards = [
-
-        {
-            title: "Total Users",
-            value: dashboard.total_users,
-            icon: <FaUsers size={32} />,
-            color: "#2563eb"
-        },
-
-        {
-            title: "Total Stoves",
-            value: dashboard.total_stoves,
-            icon: <FaFire size={32} />,
-            color: "#ea580c"
-        },
-
-        {
-            title: "Online Devices",
-            value: dashboard.online_devices,
-            icon: <FaBroadcastTower size={32} />,
-            color: "#16a34a"
-        },
-
-        {
-            title: "Telemetry Records",
-            value: dashboard.telemetry_records,
-            icon: <FaChartLine size={32} />,
-            color: "#9333ea"
-        }
-
-    ];
-
     return (
 
-        <div style={{ padding: "30px", color: "white" }}>
+        <div
+            style={{
+                padding: "30px",
+                color: "white"
+            }}
+        >
 
             <h1
                 style={{
                     marginBottom: "30px",
-                    fontSize: "48px",
+                    fontSize: "42px",
                     fontWeight: "700"
                 }}
             >
                 Dashboard Overview
             </h1>
 
+            <FleetStats
+                total={dashboard.total_stoves}
+                online={dashboard.online_devices}
+                offline={dashboard.offline_devices}
+                averageTemperature={dashboard.average_temperature}
+                lowBattery={dashboard.low_battery}
+                alerts={dashboard.active_alerts}
+            />
+
             <div
                 style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(4,1fr)",
-                    gap: "20px"
+                    gridTemplateColumns: "2fr 1fr",
+                    gap: "25px",
+                    marginTop: "30px",
+                    marginBottom: "30px"
                 }}
             >
 
-                {cards.map((card) => (
+                <div
+                    style={{
+                        background: "#1e293b",
+                        borderRadius: "12px",
+                        padding: "20px"
+                    }}
+                >
 
-                    <div
-                        key={card.title}
+                    <h2
                         style={{
-                            background: "#1e293b",
-                            borderRadius: "14px",
-                            padding: "25px",
-                            borderLeft: `6px solid ${card.color}`,
-                            transition: "0.3s",
-                            cursor: "pointer"
+                            marginBottom: "20px"
                         }}
                     >
+                        Temperature Trends
+                    </h2>
 
-                        <div
-                            style={{
-                                color: card.color,
-                                marginBottom: "15px"
-                            }}
-                        >
-                            {card.icon}
-                        </div>
+                    <TemperatureChart />
 
-                        <p
-                            style={{
-                                color: "#94a3b8",
-                                margin: 0,
-                                fontSize: "15px"
-                            }}
-                        >
-                            {card.title}
-                        </p>
+                </div>
 
-                        <h1
-                            style={{
-                                marginTop: "10px",
-                                marginBottom: 0,
-                                fontSize: "38px"
-                            }}
-                        >
-                            {card.value}
-                        </h1>
+                <div
+                    style={{
+                        background: "#1e293b",
+                        borderRadius: "12px",
+                        padding: "20px"
+                    }}
+                >
 
-                    </div>
+                    <h2
+                        style={{
+                            marginBottom: "20px"
+                        }}
+                    >
+                        Fleet Map
+                    </h2>
 
-                ))}
+                    <FleetMap stoves={stoves} />
+
+                </div>
 
             </div>
-
-            {/* Temperature Chart */}
-
-            <div
+                        <div
                 style={{
-                    marginTop: "30px",
-                    background: "#1e293b",
-                    borderRadius: "12px",
-                    padding: "20px"
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "25px"
                 }}
             >
 
-                <h2>Temperature Trends</h2>
-<TemperatureChart />
+                <div
+                    style={{
+                        background: "#1e293b",
+                        borderRadius: "12px",
+                        padding: "20px"
+                    }}
+                >
 
-<div style={{ marginTop: "30px" }}>
-    <ActiveAlerts />
-</div>
+                    <ActiveAlerts />
 
-<div style={{ marginTop: "30px" }}>
-    <AlertSummary />
-</div>
+                </div>
+
+                <div
+                    style={{
+                        background: "#1e293b",
+                        borderRadius: "12px",
+                        padding: "20px"
+                    }}
+                >
+
+                    <AlertSummary />
+
+                </div>
 
             </div>
-
-            
-
-            
-
 
         </div>
 

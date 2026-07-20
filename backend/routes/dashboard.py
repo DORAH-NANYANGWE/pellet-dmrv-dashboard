@@ -1,9 +1,12 @@
 from flask import Blueprint, jsonify
+from sqlalchemy import func
 
+from database.db import db
 from models.user import User
 from models.stove import Stove
 from models.device import Device
 from models.telemetry import Telemetry
+from models.event import Event
 
 dashboard_bp = Blueprint("dashboard", __name__)
 
@@ -27,11 +30,45 @@ def dashboard_summary():
 
     telemetry_records = Telemetry.query.count()
 
+    average_temperature = (
+        db.session.query(func.avg(Telemetry.temperature))
+        .filter(Telemetry.temperature.isnot(None))
+        .scalar()
+    )
+
+    if average_temperature is None:
+        average_temperature = 0
+
+    low_battery = Telemetry.query.filter(
+        Telemetry.battery_voltage.isnot(None),
+        Telemetry.battery_voltage < 3.5
+    ).count()
+
+    active_alerts = Event.query.filter_by(
+        acknowledged=False
+    ).count()
+
     return jsonify({
+
         "total_users": total_users,
+
         "total_stoves": total_stoves,
+
         "total_devices": total_devices,
+
         "online_devices": online_devices,
+
         "offline_devices": offline_devices,
-        "telemetry_records": telemetry_records
+
+        "telemetry_records": telemetry_records,
+
+        "average_temperature": round(
+            average_temperature,
+            1
+        ),
+
+        "low_battery": low_battery,
+
+        "active_alerts": active_alerts
+
     })

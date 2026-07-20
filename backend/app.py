@@ -8,6 +8,7 @@ from flask_bcrypt import Bcrypt
 from config import Config
 from database.db import db
 
+
 # Scheduler
 from services.scheduler import start_scheduler
 
@@ -22,6 +23,7 @@ from routes.map import map_bp
 from routes.auth import auth_bp
 from routes.events import events_bp
 from routes.cooking_sessions import cooking_sessions_bp
+from routes.reports import reports_bp
 # Import Models
 from models.user import User
 from models.stove import Stove
@@ -64,6 +66,7 @@ app.register_blueprint(stoves_bp)
 app.register_blueprint(devices_bp)
 app.register_blueprint(telemetry_bp)
 app.register_blueprint(dashboard_bp)
+app.register_blueprint(reports_bp)
 app.register_blueprint(fleet_bp)
 app.register_blueprint(map_bp)
 app.register_blueprint(auth_bp)
