@@ -1,10 +1,48 @@
+import { useEffect, useState } from "react";
+
 import ReportsFilters from "../Components/ReportsFilters";
 import ReportsSummary from "../Components/ReportsSummary";
 import ReportsChart from "../Components/ReportsChart";
 import ReportsTable from "../Components/ReportsTable";
 import ReportsExport from "../Components/ReportsExport";
 
+import { getReportsTable } from "../services/reportsService";
+
 function Reports() {
+
+    const [reportData, setReportData] = useState([]);
+
+    const [loading, setLoading] = useState(true);
+
+    async function loadReports() {
+
+        try {
+
+            const data = await getReportsTable();
+
+            setReportData(data);
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+        }
+
+        finally {
+
+            setLoading(false);
+
+        }
+
+    }
+
+    useEffect(() => {
+
+        loadReports();
+
+    }, []);
 
     return (
 
@@ -44,9 +82,14 @@ function Reports() {
 
             <ReportsChart />
 
-            <ReportsTable />
+            <ReportsTable
+                data={reportData}
+                loading={loading}
+            />
 
-            <ReportsExport />
+            <ReportsExport
+                data={reportData}
+            />
 
         </div>
 

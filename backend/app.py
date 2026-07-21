@@ -29,7 +29,6 @@ from models.user import User
 from models.stove import Stove
 from models.device import Device
 from models.telemetry import Telemetry
-
 app = Flask(__name__)
 app.config.from_object(Config)
 

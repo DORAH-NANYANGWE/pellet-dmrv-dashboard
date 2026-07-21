@@ -6,13 +6,10 @@ from models.cooking_session import CookingSession
 
 COOKING_START_TEMP = 150
 COOKING_END_TEMP = 120
+LOW_TEMPERATURE_LIMIT = 3
 
 
 def update_cooking_session(device, telemetry):
-
-    print("\n========== COOKING SESSION ==========")
-    print(f"Device: {device.device_code}")
-    print(f"Temperature: {telemetry.temperature}")
 
     active_session = (
         CookingSession.query
@@ -23,8 +20,6 @@ def update_cooking_session(device, telemetry):
         .first()
     )
 
-    print(f"Active Session: {active_session}")
-
     # ======================================
     # START NEW SESSION
     # ======================================
@@ -33,66 +28,72 @@ def update_cooking_session(device, telemetry):
         and telemetry.temperature >= COOKING_START_TEMP
     ):
 
-        print(">>> STARTING NEW COOKING SESSION")
-
         session = CookingSession(
+            stove_id=device.stove_id,
             device_id=device.id,
             device_code=device.device_code,
             start_time=datetime.utcnow(),
             peak_temperature=telemetry.temperature,
-            average_temperature=telemetry.temperature
+            average_temperature=telemetry.temperature,
+            telemetry_points=1,
+            low_temperature_count=0,
+            status="Active"
         )
 
         db.session.add(session)
-
-        print(">>> Cooking session added to database")
-
         return
 
     # ======================================
-    # UPDATE EXISTING SESSION
+    # NO ACTIVE SESSION
     # ======================================
-    if active_session is not None:
+    if active_session is None:
+        return
 
-        print(">>> Updating existing session")
+    # ======================================
+    # UPDATE SESSION
+    # ======================================
 
-        if (
-            telemetry.temperature >
-            active_session.peak_temperature
-        ):
-            active_session.peak_temperature = telemetry.temperature
+    if telemetry.temperature > active_session.peak_temperature:
+        active_session.peak_temperature = telemetry.temperature
 
-        if active_session.average_temperature is None:
+    total_temperature = (
+        active_session.average_temperature
+        * active_session.telemetry_points
+    )
 
-            active_session.average_temperature = telemetry.temperature
+    active_session.telemetry_points += 1
 
-        else:
+    active_session.average_temperature = (
+        total_temperature + telemetry.temperature
+    ) / active_session.telemetry_points
 
-            active_session.average_temperature = (
-                active_session.average_temperature
-                + telemetry.temperature
-            ) / 2
+    # ======================================
+    # CHECK FOR SESSION END
+    # ======================================
 
-        # ======================================
-        # END SESSION
-        # ======================================
-        if telemetry.temperature < COOKING_END_TEMP:
+    if telemetry.temperature < COOKING_END_TEMP:
 
-            print(">>> ENDING SESSION")
+        active_session.low_temperature_count += 1
 
-            active_session.end_time = datetime.utcnow()
+    else:
 
-            duration = (
-                active_session.end_time
-                - active_session.start_time
-            )
+        active_session.low_temperature_count = 0
 
-            active_session.duration_minutes = int(
-                duration.total_seconds() / 60
-            )
+    if (
+        active_session.low_temperature_count
+        >= LOW_TEMPERATURE_LIMIT
+    ):
 
-            print(
-                f">>> Duration: {active_session.duration_minutes} minutes"
-            )
+        active_session.end_time = datetime.utcnow()
 
-    print("=====================================\n")
+        duration = (
+            active_session.end_time
+            - active_session.start_time
+        )
+
+        active_session.duration_minutes = round(
+            duration.total_seconds() / 60,
+            1
+        )
+
+        active_session.status = "Completed"

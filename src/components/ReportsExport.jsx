@@ -1,14 +1,88 @@
-function ReportsExport() {
+import { generatePDF } from "../utils/pdfReport";
+
+function ReportsExport({ data }) {
 
     function exportCSV() {
 
-        alert("CSV export will be connected to the backend.");
+        if (!data.length) {
+
+            alert("No report data available.");
+
+            return;
+
+        }
+
+        const headers = [
+
+            "Date",
+            "Stove Code",
+            "Device Code",
+            "Temperature (°C)",
+            "Battery (V)",
+            "Signal (dBm)",
+            "Fan",
+            "GPS",
+            "Status"
+
+        ];
+
+        const csvRows = data.map((row) => [
+
+            row.date,
+            row.stove_code,
+            row.device_code,
+            row.temperature,
+            row.battery_voltage,
+            row.signal_strength,
+            row.fan_running ? "ON" : "OFF",
+            row.gps_fix ? "FIX" : "NO FIX",
+            row.status
+
+        ]);
+
+        const csvContent = [
+
+            headers.join(","),
+
+            ...csvRows.map((row) => row.join(","))
+
+        ].join("\n");
+
+        const blob = new Blob(
+
+            [csvContent],
+
+            {
+
+                type: "text/csv;charset=utf-8;"
+
+            }
+
+        );
+
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+
+        link.href = url;
+
+        const today = new Date().toISOString().split("T")[0];
+
+        link.download = `Fleet_Report_${today}.csv`;
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        document.body.removeChild(link);
+
+        window.URL.revokeObjectURL(url);
 
     }
 
     function exportPDF() {
 
-        alert("PDF export will be connected to the backend.");
+        generatePDF(data);
 
     }
 
@@ -43,7 +117,8 @@ function ReportsExport() {
                     marginBottom: "25px"
                 }}
             >
-                Export the current report for project managers, engineers, auditors, and carbon credit verification.
+                Export the current report for project managers,
+                engineers, auditors and carbon credit verification.
             </p>
 
             <div
@@ -56,45 +131,21 @@ function ReportsExport() {
 
                 <button
                     onClick={exportCSV}
-                    style={{
-                        padding: "12px 22px",
-                        background: "#16a34a",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "8px",
-                        cursor: "pointer",
-                        fontWeight: "bold"
-                    }}
+                    style={buttonStyle("#16a34a")}
                 >
                     📊 Export CSV
                 </button>
 
                 <button
                     onClick={exportPDF}
-                    style={{
-                        padding: "12px 22px",
-                        background: "#dc2626",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "8px",
-                        cursor: "pointer",
-                        fontWeight: "bold"
-                    }}
+                    style={buttonStyle("#dc2626")}
                 >
                     📄 Export PDF
                 </button>
 
                 <button
                     onClick={printReport}
-                    style={{
-                        padding: "12px 22px",
-                        background: "#2563eb",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "8px",
-                        cursor: "pointer",
-                        fontWeight: "bold"
-                    }}
+                    style={buttonStyle("#2563eb")}
                 >
                     🖨 Print Report
                 </button>
@@ -104,6 +155,22 @@ function ReportsExport() {
         </div>
 
     );
+
+}
+
+function buttonStyle(background) {
+
+    return {
+
+        padding: "12px 22px",
+        background,
+        color: "white",
+        border: "none",
+        borderRadius: "8px",
+        cursor: "pointer",
+        fontWeight: "bold"
+
+    };
 
 }
 

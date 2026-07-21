@@ -1,42 +1,4 @@
-import { useEffect, useState } from "react";
-
-import { getReportsTable } from "../services/reportsService";
-
-function ReportsTable() {
-
-    const [rows, setRows] = useState([]);
-
-    const [loading, setLoading] = useState(true);
-
-    async function loadTable() {
-
-        try {
-
-            const data = await getReportsTable();
-
-            setRows(data);
-
-        }
-
-        catch (error) {
-
-            console.error(error);
-
-        }
-
-        finally {
-
-            setLoading(false);
-
-        }
-
-    }
-
-    useEffect(() => {
-
-        loadTable();
-
-    }, []);
+function ReportsTable({ data, loading }) {
 
     if (loading) {
 
@@ -121,115 +83,99 @@ function ReportsTable() {
 
                     <tbody>
 
-                        {
+                        {data.map((row, index) => (
 
-                            rows.map((row, index) => (
+                            <tr
+                                key={index}
+                                style={{
+                                    background:
+                                        index % 2 === 0
+                                            ? "#1e293b"
+                                            : "#273549"
+                                }}
+                            >
 
-                                <tr
-                                    key={index}
+                                <td style={cellStyle}>{row.date}</td>
+
+                                <td style={cellStyle}>{row.stove_code}</td>
+
+                                <td style={cellStyle}>{row.device_code}</td>
+
+                                <td
                                     style={{
-                                        background:
-                                            index % 2 === 0
-                                                ? "#1e293b"
-                                                : "#273549"
+                                        ...cellStyle,
+                                        color: "#22c55e",
+                                        fontWeight: "bold"
                                     }}
                                 >
+                                    {row.temperature} °C
+                                </td>
 
-                                    <td style={cellStyle}>
-                                        {row.date}
-                                    </td>
+                                <td style={cellStyle}>
+                                    {row.battery_voltage} V
+                                </td>
 
-                                    <td style={cellStyle}>
-                                        {row.stove_code}
-                                    </td>
+                                <td style={cellStyle}>
+                                    {row.signal_strength} dBm
+                                </td>
 
-                                    <td style={cellStyle}>
-                                        {row.device_code}
-                                    </td>
+                                <td style={cellStyle}>
 
-                                    <td
+                                    <span
                                         style={{
-                                            ...cellStyle,
-                                            color: "#22c55e",
+                                            background:
+                                                row.fan_running
+                                                    ? "#22c55e"
+                                                    : "#ef4444",
+                                            padding: "6px 12px",
+                                            borderRadius: "20px",
                                             fontWeight: "bold"
                                         }}
                                     >
-                                        {row.temperature} °C
-                                    </td>
+                                        {row.fan_running ? "ON" : "OFF"}
+                                    </span>
 
-                                    <td style={cellStyle}>
-                                        {row.battery_voltage} V
-                                    </td>
+                                </td>
 
-                                    <td style={cellStyle}>
-                                        {row.signal_strength} dBm
-                                    </td>
+                                <td style={cellStyle}>
 
-                                    <td style={cellStyle}>
+                                    <span
+                                        style={{
+                                            background:
+                                                row.gps_fix
+                                                    ? "#22c55e"
+                                                    : "#ef4444",
+                                            padding: "6px 12px",
+                                            borderRadius: "20px",
+                                            fontWeight: "bold"
+                                        }}
+                                    >
+                                        {row.gps_fix ? "FIX" : "NO FIX"}
+                                    </span>
 
-                                        <span
-                                            style={{
-                                                background:
-                                                    row.fan_running
-                                                        ? "#22c55e"
-                                                        : "#ef4444",
-                                                padding: "6px 12px",
-                                                borderRadius: "20px",
-                                                fontWeight: "bold"
-                                            }}
-                                        >
+                                </td>
 
-                                            {row.fan_running ? "ON" : "OFF"}
+                                <td style={cellStyle}>
 
-                                        </span>
+                                    <span
+                                        style={{
+                                            background:
+                                                row.status === "Online"
+                                                    ? "#22c55e"
+                                                    : "#ef4444",
+                                            padding: "6px 12px",
+                                            borderRadius: "20px",
+                                            fontWeight: "bold"
+                                        }}
+                                    >
+                                        {row.status}
+                                    </span>
 
-                                    </td>
+                                </td>
 
-                                    <td style={cellStyle}>
+                            </tr>
 
-                                        <span
-                                            style={{
-                                                background:
-                                                    row.gps_fix
-                                                        ? "#22c55e"
-                                                        : "#ef4444",
-                                                padding: "6px 12px",
-                                                borderRadius: "20px",
-                                                fontWeight: "bold"
-                                            }}
-                                        >
-
-                                            {row.gps_fix ? "FIX" : "NO FIX"}
-
-                                        </span>
-
-                                    </td>
-
-                                    <td style={cellStyle}>
-
-                                        <span
-                                            style={{
-                                                background:
-                                                    row.status === "Online"
-                                                        ? "#22c55e"
-                                                        : "#ef4444",
-                                                padding: "6px 12px",
-                                                borderRadius: "20px",
-                                                fontWeight: "bold"
-                                            }}
-                                        >
-
-                                            {row.status}
-
-                                        </span>
-
-                                    </td>
-
-                                </tr>
-
-                            ))
-
-                        }
+                        ))}
 
                     </tbody>
 
@@ -244,17 +190,13 @@ function ReportsTable() {
 }
 
 const headerStyle = {
-
     padding: "14px",
     textAlign: "left"
-
 };
 
 const cellStyle = {
-
     padding: "14px",
     borderBottom: "1px solid #334155"
-
 };
 
 export default ReportsTable;
