@@ -1,5 +1,4 @@
 from flask import Blueprint, jsonify
-
 from flask_jwt_extended import jwt_required
 
 from models.device import Device
@@ -117,7 +116,7 @@ def get_stove(device_code):
 
 
 # ===========================
-# Temperature History
+# Complete Telemetry History
 # ===========================
 
 @fleet_bp.route("/api/fleet/<device_code>/history", methods=["GET"])
@@ -143,13 +142,27 @@ def get_temperature_history(device_code):
 
     for t in telemetry:
 
-        if t.temperature is None:
-            continue
-
         history.append({
 
-            "timestamp": t.timestamp.strftime("%H:%M"),
-            "temperature": t.temperature
+            "id": t.id,
+
+            "timestamp": t.timestamp.strftime("%H:%M:%S"),
+
+            "temperature": t.temperature,
+
+            "battery_voltage": t.battery_voltage,
+
+            "signal_strength": t.signal_strength,
+
+            "fan_running": t.fan_running,
+
+            "gps_fix": t.gps_fix,
+
+            "gps_latitude": t.gps_latitude,
+
+            "gps_longitude": t.gps_longitude,
+
+            "sd_card_ok": t.sd_card_ok
 
         })
 

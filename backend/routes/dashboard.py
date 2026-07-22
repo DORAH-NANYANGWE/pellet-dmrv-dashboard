@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from flask import Blueprint, jsonify
 from sqlalchemy import func
 
@@ -20,13 +22,22 @@ def dashboard_summary():
 
     total_devices = Device.query.count()
 
-    online_devices = Device.query.filter_by(
-        status="Online"
+    # -----------------------------------------
+    # Online / Offline Calculation
+    # -----------------------------------------
+
+    heartbeat_timeout = datetime.utcnow() - timedelta(minutes=15)
+
+    online_devices = Device.query.filter(
+        Device.last_seen.isnot(None),
+        Device.last_seen >= heartbeat_timeout
     ).count()
 
-    offline_devices = Device.query.filter_by(
-        status="Offline"
-    ).count()
+    offline_devices = total_devices - online_devices
+
+    # -----------------------------------------
+    # Telemetry Statistics
+    # -----------------------------------------
 
     telemetry_records = Telemetry.query.count()
 
@@ -43,6 +54,10 @@ def dashboard_summary():
         Telemetry.battery_voltage.isnot(None),
         Telemetry.battery_voltage < 3.5
     ).count()
+
+    # -----------------------------------------
+    # Alerts
+    # -----------------------------------------
 
     active_alerts = Event.query.filter_by(
         acknowledged=False
