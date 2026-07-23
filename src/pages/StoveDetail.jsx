@@ -58,11 +58,7 @@ function DiagnosticCard({ title, value, status }) {
                 textAlign: "center",
             }}
         >
-            <h3
-                style={{
-                    marginBottom: "15px",
-                }}
-            >
+            <h3 style={{ marginBottom: "15px" }}>
                 {icon} {title}
             </h3>
 
@@ -220,9 +216,10 @@ function StoveDetail() {
                 <InfoCard
                     title="Temperature"
                     value={
-                        stove.temperature !== null
+                        stove.temperature !== null &&
+                        stove.temperature !== undefined
                             ? `${stove.temperature} °C`
-                            : "--"
+                            : "No Data"
                     }
                     color="#ef4444"
                 />
@@ -230,9 +227,10 @@ function StoveDetail() {
                 <InfoCard
                     title="Battery"
                     value={
-                        stove.battery_voltage
-                            ? `${stove.battery_voltage} V`
-                            : "--"
+                        stove.battery_voltage !== null &&
+                        stove.battery_voltage !== undefined
+                            ? `${stove.battery_voltage.toFixed(2)} V`
+                            : "No Data"
                     }
                     color="#22c55e"
                 />
@@ -240,7 +238,10 @@ function StoveDetail() {
                 <InfoCard
                     title="Fan"
                     value={
-                        stove.fan_running
+                        stove.fan_running === null ||
+                        stove.fan_running === undefined
+                            ? "No Data"
+                            : stove.fan_running
                             ? "Running"
                             : "Stopped"
                     }
@@ -250,9 +251,10 @@ function StoveDetail() {
                 <InfoCard
                     title="Signal"
                     value={
-                        stove.signal_strength !== null
+                        stove.signal_strength !== null &&
+                        stove.signal_strength !== undefined
                             ? `${stove.signal_strength} dBm`
-                            : "--"
+                            : "No Data"
                     }
                     color="#3b82f6"
                 />
@@ -294,18 +296,21 @@ function StoveDetail() {
             >
                 <InfoCard
                     title="Firmware"
-                    value={stove.firmware_version}
+                    value={stove.firmware_version ?? "Unknown"}
                 />
 
                 <InfoCard
                     title="Hardware"
-                    value={stove.hardware_version}
+                    value={stove.hardware_version ?? "Unknown"}
                 />
 
                 <InfoCard
                     title="SD Card"
                     value={
-                        stove.sd_card_ok
+                        stove.sd_card_ok === null ||
+                        stove.sd_card_ok === undefined
+                            ? "No Data"
+                            : stove.sd_card_ok
                             ? "Healthy"
                             : "Fault"
                     }
@@ -316,7 +321,7 @@ function StoveDetail() {
                     value={
                         stove.last_seen
                             ? stove.last_seen
-                            : "--"
+                            : "Never Reported"
                     }
                 />
             </div>
@@ -369,12 +374,18 @@ function StoveDetail() {
                     <DiagnosticCard
                         title="Fan"
                         value={
-                            stove.fan_running
+                            stove.fan_running === null ||
+                            stove.fan_running === undefined
+                                ? "No Data"
+                                : stove.fan_running
                                 ? "Running"
                                 : "Stopped"
                         }
                         status={
-                            stove.fan_running
+                            stove.fan_running === null ||
+                            stove.fan_running === undefined
+                                ? "warning"
+                                : stove.fan_running
                                 ? "good"
                                 : "bad"
                         }
@@ -397,12 +408,18 @@ function StoveDetail() {
                     <DiagnosticCard
                         title="SD Card"
                         value={
-                            stove.sd_card_ok
+                            stove.sd_card_ok === null ||
+                            stove.sd_card_ok === undefined
+                                ? "No Data"
+                                : stove.sd_card_ok
                                 ? "Healthy"
                                 : "Fault"
                         }
                         status={
-                            stove.sd_card_ok
+                            stove.sd_card_ok === null ||
+                            stove.sd_card_ok === undefined
+                                ? "warning"
+                                : stove.sd_card_ok
                                 ? "good"
                                 : "bad"
                         }
@@ -411,12 +428,16 @@ function StoveDetail() {
                     <DiagnosticCard
                         title="Battery"
                         value={
-                            stove.battery_voltage
-                                ? `${stove.battery_voltage} V`
-                                : "Unknown"
+                            stove.battery_voltage !== null &&
+                            stove.battery_voltage !== undefined
+                                ? `${stove.battery_voltage.toFixed(2)} V`
+                                : "No Data"
                         }
                         status={
-                            (stove.battery_voltage ?? 0) >= 3.6
+                            stove.battery_voltage === null ||
+                            stove.battery_voltage === undefined
+                                ? "warning"
+                                : stove.battery_voltage >= 3.6
                                 ? "good"
                                 : "warning"
                         }
@@ -425,12 +446,16 @@ function StoveDetail() {
                     <DiagnosticCard
                         title="Signal"
                         value={
-                            stove.signal_strength !== null
+                            stove.signal_strength !== null &&
+                            stove.signal_strength !== undefined
                                 ? `${stove.signal_strength} dBm`
                                 : "No Data"
                         }
                         status={
-                            (stove.signal_strength ?? -999) > -90
+                            stove.signal_strength === null ||
+                            stove.signal_strength === undefined
+                                ? "warning"
+                                : stove.signal_strength > -90
                                 ? "good"
                                 : "warning"
                         }
